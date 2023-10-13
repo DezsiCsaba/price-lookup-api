@@ -18,26 +18,41 @@ router.post('/item/create', async (req, res) => {
     })
 })
 
-// router.post(
-//     "/upload",
-//     upload.fields([{ name: "image", maxCount: 1 }]),
-//     async (req, res, next) => {
-//         console.log("/upload", req.files);
-//         if (req.files.image.length) {
-//             const image = req.files.image[0]; // { buffer, originalname, size, ...}
-//             //ImageBlobConverter.ImageToBlob(image.buffer)
-//             await connector(false)
-//             let picture = Pictures.build({
-//                 Picture: image,
-//                 ItemId:
-//             })
-//             let shit = await picture.save()
-//             res.send({ success: true, count: req.files.image.originalname });
-//         } else {
-//             res.send({ success: false, message: "No files sent." });
-//         }
-//     }
-// );
+//only for multipart/form-data MIME type
+router.put(
+    "/img/:itemId",
+    async (req, res, next) => {
+        console.log("/img/:itemId", req.files);
+        if (req.files.image[0].length) {
+            const image = req.files.image[0]; // { buffer, originalname, size, ...}
+            //ImageBlobConverter.ImageToBlob(image.buffer)
+            const {itemId} = req.params
+            await connector(false)
+            let picture = build({
+                Picture: image,
+                ItemId: itemId
+            })
+            let shit = await picture.save()
+            res.send({ success: true, count: req.files.image.originalname });
+        } else {
+            res.send({ success: false, message: "No files sent." });
+        }
+    }
+);
+router.get(
+    "/img/:itemId",
+    async (req, res, next) => {
+        console.log("/img/:itemId", req.files);
+        if (req.files.image.length) {
+            const {itemId} = req.params
+            await connector(false)
+            const images= Pictures.findAll({where: {ItemId: itemId}})
+            res.send({ success: true, count: req.files.image.originalname });
+        } else {
+            res.send({ success: false, message: "No files sent." });
+        }
+    }
+);
 //#endregion
 
 
