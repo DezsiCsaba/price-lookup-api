@@ -76,7 +76,12 @@ router.get("/img/:itemId", async (req, res) => {
     console.log("/img/:itemId", req.files);
     const {itemId} = req.params
     await connector(false)
-    const images= await Pictures.findAll({where: {ItemId: itemId}})
+    const images= await Pictures.findAll({
+        include: Items,
+        where: {
+            ItemId: itemId
+        }
+    })
 
     if (images.length === 0){
         res.json({
@@ -88,7 +93,12 @@ router.get("/img/:itemId", async (req, res) => {
     let imgs=[]
     images.forEach((img) => {
         let arraybuffer= Buffer.from(img.Picture)
-        imgs.push(arraybuffer.toString('base64'))
+        // imgs.push(arraybuffer.toString('base64'))
+        let ret = {
+            array: arraybuffer.toString('base64'),
+            item: img.Item
+        }
+        imgs.push(ret)
     })
 
     res.setHeader("Content-Type", "application/json");
