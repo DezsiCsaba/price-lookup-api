@@ -7,7 +7,7 @@ class Pictures extends Model {}
 Pictures.init(
     {
         Picture: {
-            type: sequelize.BLOB,
+            type: sequelize.BLOB('long'),
             allowNull: false
         },
         ItemId: {

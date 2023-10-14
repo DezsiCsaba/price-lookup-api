@@ -1,6 +1,8 @@
 const _db = require('./seqDB')
 const config = require('../config')
-
+function sendToElasticAndLogToConsole (sql, queryObject) {
+    // console.log(sql)
+}
 const connect = async (clearTable = false) => {
     console.log('>>> connecting to DB')
     await _db.authenticate()
@@ -9,6 +11,9 @@ const connect = async (clearTable = false) => {
 
             if (clearTable){
                 await _db.sync({
+                    logging: (sql, queryObject) => {
+                        sendToElasticAndLogToConsole(sql, queryObject)
+                    },
                     force: true
                 })
             }

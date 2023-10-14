@@ -8,6 +8,7 @@ module.exports = new Sequelize(
     {
         host: config.DB_HOST,
         port: config.DB_PORT,
-        dialect: config.DIALECCT
+        dialect: config.DIALECCT,
+        logging: false
     }
 )
