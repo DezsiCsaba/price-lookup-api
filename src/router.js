@@ -12,6 +12,7 @@ const logController = new LogController()
 //#region >>> SEQ-MODELS
 const Items = require('./sequelize-stuff/models/items')
 const Pictures = require('./sequelize-stuff/models/pictures')
+const Prices = require('./sequelize-stuff/models/prices')
 //#endregion
 
 
@@ -22,8 +23,13 @@ function sendToElasticAndLogToConsole (sql, queryObject) {
 const connector = require('./sequelize-stuff/dbConnector')
 const multer = require("multer");
 const upload = multer();
+const {Op} = require('sequelize')
+const {all} = require("express/lib/application");
+const _ = require('lodash')
 //#endregion
 
+
+// TODO: negatív res ágaknál res.sendStatus bevezetése :)
 
 //#region >>> ROUTES
 router.use(async (req, res, next) => {
@@ -31,7 +37,7 @@ router.use(async (req, res, next) => {
 })
 
 //>>> ITEMS
-router.post('/item/create', async (req, res) => {
+router.post('/product/create', async (req, res) => {
     await connector(false)
     let item = Items.build({
         ProductName: req.body.ProductName
@@ -40,6 +46,141 @@ router.post('/item/create', async (req, res) => {
 
     res.json({
         item: shit
+    })
+})
+//updateOrAddProduct
+router.put("/product/update", async (req, res) => {
+    await connector()
+
+    let oldVals = Items.findAll()
+    let bestMatch = filterSimilarNames(req.body.productName, oldVals )
+    if (!bestMatch){
+        res.json({
+            succes: false,
+            message: 'No product to update. Please a create a new one'
+        })
+        return
+    }
+
+    let updated = await Prices.update({
+        ShopName: req.body.shop,
+        Price: req.body.price
+    }, {
+        where: {
+            ItemId: bestMatch.id
+        }
+    })
+
+    res.json({
+        succes: true,
+        message: updated.ItemId
+    })
+})
+function filterSimilarNames(like, allEntry){
+    let percArray = []
+    let cutOff = 80 //minimum percentage of similarity
+
+    allEntry.forEach((entry) => {
+        let perc = similarity(like, entry.ProductName)
+        if(perc >= cutOff/10){
+            percArray.push({
+                percentage: perc,
+                id: entry.id
+            })
+        }
+    })
+    return _.maxBy(percArray, (a) => {return a.percentage})
+}
+
+function similarity(s1, s2) {
+    let longer = s1;
+    let shorter = s2;
+    if (s1.length < s2.length) {
+        longer = s2;
+        shorter = s1;
+    }
+    let longerLength = longer.length;
+    if (longerLength === 0) {
+        return 1.0;
+    }
+    return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
+}
+function editDistance(s1, s2) {
+    s1 = s1.toLowerCase();
+    s2 = s2.toLowerCase();
+
+    let costs = []
+    for (let i = 0; i <= s1.length; i++) {
+        let lastValue = i;
+        for (let j = 0; j <= s2.length; j++) {
+            if (i === 0)
+                costs[j] = j;
+            else {
+                if (j > 0) {
+                    let newValue = costs[j - 1];
+                    if (s1.charAt(i - 1) !== s2.charAt(j - 1))
+                        newValue = Math.min(Math.min(newValue, lastValue),
+                            costs[j]) + 1;
+                    costs[j - 1] = lastValue;
+                    lastValue = newValue;
+                }
+            }
+        }
+        if (i > 0)
+            costs[s2.length] = lastValue;
+    }
+    return costs[s2.length];
+}
+
+router.get('/product/search/byname', async (req, res) => {
+    let productName = req.query.productName
+    let allLikeName = await Items.findAll({
+        include: [
+            {model: Pictures, limit:1},
+            {model: Prices}
+        ],
+        where: {
+            ProductName: {
+                [Op.like]: `%${productName}%`
+            }
+        }
+    })
+    if (!allLikeName){
+        res.json({
+            success: false,
+            message: 'No such item found'
+        })
+        return
+    }
+    res.json({
+        success: true,
+        searchResult: allLikeName
+    })
+})
+router.get('/recommendations', async (req, res) => {
+    let productName = req.query.productName
+    let allLikeName = await Items.findAll({
+        include: [
+            {model: Pictures, limit:1},
+            {model: Prices}
+        ],
+        where: {
+            ProductName: {
+                [Op.like]: `%${productName}%`
+            }
+        },
+        limit: 20
+    })
+    if (!allLikeName){
+        res.json({
+            success: false,
+            message: 'Nothing to show, go home and play some videogames :)'
+        })
+        return
+    }
+    res.json({
+        success: true,
+        searchResult: allLikeName
     })
 })
 
@@ -94,8 +235,12 @@ router.get("/img/:itemId", async (req, res) => {
     images.forEach((img) => {
         let arraybuffer= Buffer.from(img.Picture)
         // imgs.push(arraybuffer.toString('base64'))
+        // let ret = {
+        //     array: arraybuffer.toString('base64'),
+        //     item: img.Item
+        // }
         let ret = {
-            array: arraybuffer.toString('base64'),
+            array: arraybuffer.toString('base64').slice(0, 30),
             item: img.Item
         }
         imgs.push(ret)
@@ -108,7 +253,6 @@ router.get("/img/:itemId", async (req, res) => {
     })
 })
 //#endregion
-
 
 
 module.exports = router
