@@ -130,8 +130,9 @@ function editDistance(s1, s2) {
     }
     return costs[s2.length];
 }
-
+//http://localhost:3000/api/product/search/byname/
 router.get('/product/search/byname', async (req, res) => {
+    console.log('>>>>> incoming search request')
     let productName = req.query.productName
     let allLikeName = await Items.findAll({
         include: [
@@ -142,15 +143,49 @@ router.get('/product/search/byname', async (req, res) => {
             ProductName: {
                 [Op.like]: `%${productName}%`
             }
+        },
+    })
+
+    let obj=[]
+    allLikeName.forEach((item)=>{
+        let Pictures=[]
+        let Prices=[]
+        let main= {
+            id: item.id,
+            ProductName:item.ProductName,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+            Pictures:Pictures,
+            Prices:Prices
         }
+        item.Pictures.forEach((p)=>{
+            let pic={
+                id: p.id,
+                createdAt: p.createdAt,
+                updatedAt: p.updatedAt,
+                image: Buffer.from(p.Picture).toString('base64')
+            }
+            Pictures.push(pic)
+        })
+        item.Prices.forEach((pr)=>{
+            let price={
+                id: pr.id,
+                createdAt: pr.createdAt,
+                updatedAt: pr.updatedAt,
+                Price: pr.Price,
+                ShopName: pr.ShopName,
+                ItemId: pr.ItemId
+            }
+            Prices.push(price)
+        })
+        obj.push(main)
     })
     if (allLikeName.length === 0){
         res.sendStatus(406)
         return
     }
     res.json({
-        success: true,
-        searchResult: allLikeName
+        "searchResult": obj
     })
 })
 router.get('/recommendations', async (req, res) => {
@@ -222,14 +257,14 @@ router.get("/img/:itemId", async (req, res) => {
     images.forEach((img) => {
         let arraybuffer= Buffer.from(img.Picture)
         // imgs.push(arraybuffer.toString('base64'))
-        // let ret = {
-        //     array: arraybuffer.toString('base64'),
-        //     item: img.Item
-        // }
         let ret = {
-            array: arraybuffer.toString('base64').slice(0, 30),
+            array: arraybuffer.toString('base64'),
             item: img.Item
         }
+        // let ret = {
+        //     array: arraybuffer.toString('base64').slice(0, 30),
+        //     item: img.Item
+        // }
         imgs.push(ret)
     })
 
