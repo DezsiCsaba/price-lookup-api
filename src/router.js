@@ -29,7 +29,6 @@ const _ = require('lodash')
 //#endregion
 
 
-// TODO: negatív res ágaknál res.sendStatus bevezetése :)
 
 //#region >>> ROUTES
 router.use(async (req, res, next) => {
@@ -44,6 +43,9 @@ router.post('/product/create', async (req, res) => {
     })
     let shit = await item.save()
 
+    if (!shit){
+        res.sendStatus(406)
+    }
     res.json({
         item: shit
     })
@@ -55,10 +57,7 @@ router.put("/product/update", async (req, res) => {
     let oldVals = Items.findAll()
     let bestMatch = filterSimilarNames(req.body.productName, oldVals )
     if (!bestMatch){
-        res.json({
-            succes: false,
-            message: 'No product to update. Please a create a new one'
-        })
+        res.sendStatus(406)
         return
     }
 
@@ -145,11 +144,8 @@ router.get('/product/search/byname', async (req, res) => {
             }
         }
     })
-    if (!allLikeName){
-        res.json({
-            success: false,
-            message: 'No such item found'
-        })
+    if (allLikeName.length === 0){
+        res.sendStatus(406)
         return
     }
     res.json({
@@ -171,11 +167,8 @@ router.get('/recommendations', async (req, res) => {
         },
         limit: 20
     })
-    if (!allLikeName){
-        res.json({
-            success: false,
-            message: 'Nothing to show, go home and play some videogames :)'
-        })
+    if (allLikeName.length === 0){
+        res.sendStatus(406)
         return
     }
     res.json({
@@ -192,10 +185,7 @@ router.post("/img/:itemId", upload.single('file'), async (req, res) => {
     let img = req.file
 
     if (!img) {
-        res.json({
-            success: false,
-            message: "No files sent."
-        })
+        res.sendStatus(406)
         return
     }
 
@@ -225,10 +215,7 @@ router.get("/img/:itemId", async (req, res) => {
     })
 
     if (images.length === 0){
-        res.json({
-            success: false,
-            message: "No images found for id: "+itemId
-        })
+        res.sendStatus(406)
         return
     }
     let imgs=[]
