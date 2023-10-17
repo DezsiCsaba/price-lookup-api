@@ -145,6 +145,10 @@ router.get('/product/search/byname', async (req, res) => {
             }
         },
     })
+    if (allLikeName.length === 0){
+        res.sendStatus(406)
+        return
+    }
 
     let obj=[]
     allLikeName.forEach((item)=>{
@@ -168,50 +172,62 @@ router.get('/product/search/byname', async (req, res) => {
             Pictures.push(pic)
         })
         item.Prices.forEach((pr)=>{
-            let price={
-                id: pr.id,
-                createdAt: pr.createdAt,
-                updatedAt: pr.updatedAt,
-                Price: pr.Price,
-                ShopName: pr.ShopName,
-                ItemId: pr.ItemId
-            }
+            let price={...pr}
             Prices.push(price)
         })
         obj.push(main)
     })
-    if (allLikeName.length === 0){
-        res.sendStatus(406)
-        return
-    }
     res.json({
         "searchResult": obj
     })
 })
 router.get('/recommendations', async (req, res) => {
-    let productName = req.query.productName
+    let obj=[]
     let allLikeName = await Items.findAll({
         include: [
             {model: Pictures, limit:1},
             {model: Prices}
         ],
-        where: {
-            ProductName: {
-                [Op.like]: `%${productName}%`
-            }
-        },
-        limit: 20
     })
-    if (allLikeName.length === 0){
+    if (allLikeName.length === 0) {
         res.sendStatus(406)
         return
     }
+    allLikeName.forEach((item)=>{
+        let Pictures=[]
+        let Prices=[]
+        let main= {
+            id: item.id,
+            ProductName:item.ProductName,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+            Pictures:Pictures,
+            Prices:Prices
+        }
+        item.Pictures.forEach((p)=>{
+            let pic={
+                id: p.id,
+                createdAt: p.createdAt,
+                updatedAt: p.updatedAt,
+                image: Buffer.from(p.Picture).toString('base64')
+            }
+            Pictures.push(pic)
+        })
+        item.Prices.forEach((pr)=>{
+            let price={...pr}
+            Prices.push(price)
+        })
+        obj.push(main)
+    })
+
+    let sorted = _.sortBy(obj, (item) => {
+        _.max(item.Prices)
+    })
+
     res.json({
-        success: true,
-        searchResult: allLikeName
+        recommended: obj.slice(0, sorted.length > 20 ? 20 : sorted.length)
     })
 })
-
 
 //>>> PICTURES
 //only for multipart/form-data MIME type
