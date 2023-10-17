@@ -131,6 +131,28 @@ function editDistance(s1, s2) {
     return costs[s2.length];
 }
 //http://localhost:3000/api/product/search/byname/
+
+router.get('/product/getById/:itemId', async (req, res) => {
+    let {itemId} = req.params
+    let item = await Items.findOne({
+        include: [
+            {model: Pictures},
+            {model: Prices}
+        ],
+        where: {id: itemId}
+    })
+
+    if (item === null) {
+        res.sendStatus(406)
+        return
+    }
+    let list = [item]
+    let result = akosMagiko(list)
+
+    res.json({
+        result: result
+    })
+})
 router.get('/product/search/byname', async (req, res) => {
     console.log('>>>>> incoming search request')
     let productName = req.query.productName
@@ -150,6 +172,7 @@ router.get('/product/search/byname', async (req, res) => {
         return
     }
 
+    /*
     let obj=[]
     allLikeName.forEach((item)=>{
         let Pictures=[]
@@ -176,13 +199,13 @@ router.get('/product/search/byname', async (req, res) => {
             Prices.push(price)
         })
         obj.push(main)
-    })
+    })*/
+    let obj = akosMagiko(allLikeName)
     res.json({
         "searchResult": obj
     })
 })
 router.get('/recommendations', async (req, res) => {
-    let obj=[]
     let allLikeName = await Items.findAll({
         include: [
             {model: Pictures, limit:1},
@@ -193,6 +216,7 @@ router.get('/recommendations', async (req, res) => {
         res.sendStatus(406)
         return
     }
+    /*let obj=[]
     allLikeName.forEach((item)=>{
         let Pictures=[]
         let Prices=[]
@@ -209,23 +233,23 @@ router.get('/recommendations', async (req, res) => {
                 id: p.id,
                 createdAt: p.createdAt,
                 updatedAt: p.updatedAt,
-                image: Buffer.from(p.Picture).toString('base64')
+                image: Buffer.from(p.Picture).toString('base64').slice(0,10)
             }
             Pictures.push(pic)
         })
         item.Prices.forEach((pr)=>{
-            let price={...pr}
+            let price={...pr.dataValues}
             Prices.push(price)
         })
         obj.push(main)
-    })
+    })*/
 
+    let obj = akosMagiko(allLikeName)
     let sorted = _.sortBy(obj, (item) => {
-        _.max(item.Prices)
+        return _.maxBy(item.Prices, (price) => {return price.updatedAt}).updatedAt
     })
-
     res.json({
-        recommended: obj.slice(0, sorted.length > 20 ? 20 : sorted.length)
+        recommended: sorted.reverse().slice(0, sorted.length > 20 ? -20 : sorted.length)
     })
 })
 
@@ -292,5 +316,36 @@ router.get("/img/:itemId", async (req, res) => {
 })
 //#endregion
 
+
+function akosMagiko(iterableArray){
+    let obj=[]
+    iterableArray.forEach((item)=>{
+        let Pictures=[]
+        let Prices=[]
+        let main= {
+            id: item.id,
+            ProductName:item.ProductName,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+            Pictures:Pictures,
+            Prices:Prices
+        }
+        item.Pictures.forEach((p)=>{
+            let pic={
+                id: p.id,
+                createdAt: p.createdAt,
+                updatedAt: p.updatedAt,
+                image: Buffer.from(p.Picture).toString('base64')
+            }
+            Pictures.push(pic)
+        })
+        item.Prices.forEach((pr)=>{
+            let price={...pr.dataValues}
+            Prices.push(price)
+        })
+        obj.push(main)
+    })
+    return obj
+}
 
 module.exports = router
