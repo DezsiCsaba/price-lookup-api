@@ -1,0 +1,166 @@
+{
+	"info": {
+		"_postman_id": "ba65945c-b521-4fab-96a9-1d8b36dc7e3a",
+		"name": "Price-Lookup-API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24751656"
+	},
+	"item": [
+		{
+			"name": "Images",
+			"item": [
+				{
+					"name": "Picture - create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "szirszar.txt"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://192.168.0.184:3000/api/img",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"0",
+								"184"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"img"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Picture - getOne",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.0.184:3000/api/img/12",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"0",
+								"184"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"img",
+								"12"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Items",
+			"item": [
+				{
+					"name": "Item - create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ProductName\": \"mittemen\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://192.168.0.184:3000/api/item/create",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"0",
+								"184"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"item",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Item - search_by_productName",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.0.184:3000/api/product/search/byname?productName=o",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"0",
+								"184"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"product",
+								"search",
+								"byname"
+							],
+							"query": [
+								{
+									"key": "productName",
+									"value": "o"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Item - getById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.0.184:3000/api/product/getById/12",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"0",
+								"184"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"product",
+								"getById",
+								"12"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
