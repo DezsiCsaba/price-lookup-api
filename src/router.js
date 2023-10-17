@@ -36,10 +36,12 @@ router.use(async (req, res, next) => {
 })
 
 //>>> ITEMS
+// TODO -> mindenre egy create szar kellene - kiemelni mindent funcba és egy endpointon megcsinálni
 router.post('/product/create', async (req, res) => {
     await connector(false)
+    console.log({asdasd: req.body})
     let item = Items.build({
-        ProductName: req.body.ProductName
+        ProductName: req.body.productName
     })
     let shit = await item.save()
 
@@ -54,7 +56,7 @@ router.post('/product/create', async (req, res) => {
 router.put("/product/update", async (req, res) => {
     await connector()
 
-    let oldVals = Items.findAll()
+    let oldVals = await Items.findAll()
     let bestMatch = filterSimilarNames(req.body.productName, oldVals )
     if (!bestMatch){
         res.sendStatus(406)
@@ -149,9 +151,7 @@ router.get('/product/getById/:itemId', async (req, res) => {
     let list = [item]
     let result = akosMagiko(list)
 
-    res.json({
-        result: result
-    })
+    res.send(JSON.stringify(result[0]))
 })
 router.get('/product/search/byname', async (req, res) => {
     console.log('>>>>> incoming search request')
@@ -249,7 +249,7 @@ router.get('/recommendations', async (req, res) => {
         return _.maxBy(item.Prices, (price) => {return price.updatedAt}).updatedAt
     })
     res.json({
-        recommended: sorted.reverse().slice(0, sorted.length > 20 ? -20 : sorted.length)
+        searchResult: sorted.reverse().slice(0, sorted.length > 20 ? -20 : sorted.length)
     })
 })
 
