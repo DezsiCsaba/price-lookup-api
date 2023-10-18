@@ -36,20 +36,27 @@ router.use(async (req, res, next) => {
 })
 
 //>>> ITEMS
-// TODO -> mindenre egy create szar kellene - kiemelni mindent funcba és egy endpointon megcsinálni
 router.post('/product/create', async (req, res) => {
     await connector(false)
-    console.log({asdasd: req.body})
+
     let item = Items.build({
         ProductName: req.body.productName
     })
     let shit = await item.save()
 
-    if (!shit){
+    let price = Prices.build({
+        ShopName: req.body.shop,
+        Price: req.body.price,
+        ItemId: shit.id
+    })
+    let shiter = await price.save()
+
+    if (!shit || !shiter){
         res.sendStatus(406)
     }
     res.json({
-        item: shit
+        item: shit,
+        price: shiter
     })
 })
 //updateOrAddProduct
