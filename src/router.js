@@ -55,8 +55,7 @@ router.post('/product/create', async (req, res) => {
         res.sendStatus(406)
     }
     res.json({
-        item: shit,
-        price: shiter
+        itemId: shit.id
     })
 })
 //updateOrAddProduct
@@ -64,25 +63,45 @@ router.put("/product/update", async (req, res) => {
     await connector()
 
     let oldVals = await Items.findAll()
+    console.log({asd: req.body.productName})
     let bestMatch = filterSimilarNames(req.body.productName, oldVals )
+    console.log({bestMatch})
     if (!bestMatch){
         res.sendStatus(406)
         return
     }
 
-    let updated = await Prices.update({
-        ShopName: req.body.shop,
-        Price: req.body.price
-    }, {
+    let shopExists = null
+    shopExists = await Prices.findOne({
         where: {
+            ShopName: req.body.shop,
             ItemId: bestMatch.id
         }
     })
+    console.log({shopExists})
+    if(shopExists !== null){
+        let updated = await shopExists.update({
+            ShopName: req.body.shop,
+            Price: req.body.price
+        })
+        res.json({
+            itemId: updated.ItemId
+        })
+    }
+    else{
+        let created = await Prices.build({
+            ShopName: req.body.shop,
+            Price: req.body.price,
+            ItemId: bestMatch.id
+        })
+        let result = await created.save()
+        res.json({
+            itemId: result.ItemId
+        })
+    }
 
-    res.json({
-        succes: true,
-        message: updated.ItemId
-    })
+
+
 })
 function filterSimilarNames(like, allEntry){
     let percArray = []
@@ -90,17 +109,19 @@ function filterSimilarNames(like, allEntry){
 
     allEntry.forEach((entry) => {
         let perc = similarity(like, entry.ProductName)
-        if(perc >= cutOff/10){
+        if(perc >= cutOff/100){
             percArray.push({
                 percentage: perc,
                 id: entry.id
             })
         }
     })
+    console.log({percArray})
     return _.maxBy(percArray, (a) => {return a.percentage})
 }
 
 function similarity(s1, s2) {
+    console.log('checking similarity between: ' + s1 + ', ' + s2)
     let longer = s1;
     let shorter = s2;
     if (s1.length < s2.length) {
@@ -266,14 +287,21 @@ router.post("/img/:itemId", upload.single('file'), async (req, res) => {
     let {itemId} = req.params
     let img = req.file
 
+    console.log({itemId})
+    if (img){
+        console.log('a z img type-ja: ',typeof img)
+        console.log({img})
+    }
+
     if (!img) {
+        console.log('>>>>> [ERROR] nincs img!!!')
         res.sendStatus(406)
         return
     }
 
     await connector(false)
     let picture = Pictures.build({
-        Picture:  img.buffer,
+        Picture: img.buffer,
         ItemId: itemId
     })
     await picture.save()
