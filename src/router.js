@@ -1,4 +1,3 @@
-const express = require('express')
 const promiseRouter = require('express-promise-router')
 const router = new promiseRouter()
 
@@ -17,14 +16,11 @@ const Prices = require('./sequelize-stuff/models/prices')
 
 
 //#region >>> OTHER STUFF
-function sendToElasticAndLogToConsole (sql, queryObject) {
-    console.log(sql)
-}
+
 const connector = require('./sequelize-stuff/dbConnector')
 const multer = require("multer");
 const upload = multer();
 const {Op} = require('sequelize')
-const {all} = require("express/lib/application");
 const _ = require('lodash')
 //#endregion
 
@@ -78,7 +74,6 @@ router.put("/product/update", async (req, res) => {
             ItemId: bestMatch.id
         }
     })
-    console.log({shopExists})
     if(shopExists !== null){
         let updated = await shopExists.update({
             ShopName: req.body.shop,
@@ -160,7 +155,6 @@ function editDistance(s1, s2) {
     }
     return costs[s2.length];
 }
-//http://localhost:3000/api/product/search/byname/
 
 router.get('/product/getById/:itemId', async (req, res) => {
     let {itemId} = req.params
@@ -199,35 +193,6 @@ router.get('/product/search/byname', async (req, res) => {
         res.sendStatus(406)
         return
     }
-
-    /*
-    let obj=[]
-    allLikeName.forEach((item)=>{
-        let Pictures=[]
-        let Prices=[]
-        let main= {
-            id: item.id,
-            ProductName:item.ProductName,
-            createdAt: item.createdAt,
-            updatedAt: item.updatedAt,
-            Pictures:Pictures,
-            Prices:Prices
-        }
-        item.Pictures.forEach((p)=>{
-            let pic={
-                id: p.id,
-                createdAt: p.createdAt,
-                updatedAt: p.updatedAt,
-                image: Buffer.from(p.Picture).toString('base64')
-            }
-            Pictures.push(pic)
-        })
-        item.Prices.forEach((pr)=>{
-            let price={...pr}
-            Prices.push(price)
-        })
-        obj.push(main)
-    })*/
     let obj = akosMagiko(allLikeName)
     res.json({
         "searchResult": obj
@@ -244,34 +209,6 @@ router.get('/recommendations', async (req, res) => {
         res.sendStatus(406)
         return
     }
-    /*let obj=[]
-    allLikeName.forEach((item)=>{
-        let Pictures=[]
-        let Prices=[]
-        let main= {
-            id: item.id,
-            ProductName:item.ProductName,
-            createdAt: item.createdAt,
-            updatedAt: item.updatedAt,
-            Pictures:Pictures,
-            Prices:Prices
-        }
-        item.Pictures.forEach((p)=>{
-            let pic={
-                id: p.id,
-                createdAt: p.createdAt,
-                updatedAt: p.updatedAt,
-                image: Buffer.from(p.Picture).toString('base64').slice(0,10)
-            }
-            Pictures.push(pic)
-        })
-        item.Prices.forEach((pr)=>{
-            let price={...pr.dataValues}
-            Prices.push(price)
-        })
-        obj.push(main)
-    })*/
-
     let obj = akosMagiko(allLikeName)
     let sorted = _.sortBy(obj, (item) => {
         return _.maxBy(item.Prices, (price) => {return price.updatedAt}).updatedAt
@@ -331,15 +268,10 @@ router.get("/img/:itemId", async (req, res) => {
     let imgs=[]
     images.forEach((img) => {
         let arraybuffer= Buffer.from(img.Picture)
-        // imgs.push(arraybuffer.toString('base64'))
         let ret = {
             array: arraybuffer.toString('base64'),
             item: img.Item
         }
-        // let ret = {
-        //     array: arraybuffer.toString('base64').slice(0, 30),
-        //     item: img.Item
-        // }
         imgs.push(ret)
     })
 
