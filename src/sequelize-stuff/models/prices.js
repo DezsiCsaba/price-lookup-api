@@ -3,9 +3,9 @@ const {Model} = require('sequelize')
 const _db = require('../seqDB')
 
 
-class Prices extends Model {}
+class prices extends Model {}
 
-Prices.init(
+prices.init(
     {
         Price: {
             type: sequelize.INTEGER,
@@ -22,12 +22,12 @@ Prices.init(
     },
     {
         sequelize: _db,
-        tableName: 'Prices',
+        tableName: 'prices',
         modelName: 'Prices'
     }
 )
 
-module.exports = Prices
+module.exports = prices
 
 
 

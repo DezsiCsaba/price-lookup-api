@@ -2,9 +2,9 @@ const sequelize = require('sequelize')
 const {Model} = require('sequelize')
 const _db = require('../seqDB')
 
-class Logger extends Model {}
+class logger extends Model {}
 
-Logger.init(
+logger.init(
     {
         Request:{
             type: sequelize.STRING
@@ -20,8 +20,8 @@ Logger.init(
     {
         sequelize: _db,
         tableName: 'logs',
-        modelName: 'Logger'
+        modelName: 'logger'
     }
 )
 
-module.exports = Logger
+module.exports = logger
