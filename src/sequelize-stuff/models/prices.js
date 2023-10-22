@@ -2,6 +2,7 @@ const sequelize = require('sequelize')
 const {Model} = require('sequelize')
 const _db = require('../seqDB')
 
+const Items = require('./items')
 
 class prices extends Model {}
 
@@ -26,6 +27,8 @@ prices.init(
         modelName: 'Prices'
     }
 )
+Items.hasMany(prices, {foreignKey: 'ItemId'})
+prices.belongsTo(Items)
 
 module.exports = prices
 
