@@ -22,7 +22,7 @@ prices.init(
     },
     {
         sequelize: _db,
-        tableName: 'Prices',
+        tableName: 'prices',
         modelName: 'Prices'
     }
 )
