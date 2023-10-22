@@ -10,6 +10,7 @@ const connect = async (clearTable = false) => {
             console.log(`\n\n\t***** CONNECTION WITH DB ESTABLISHED >>> _db : ${config.DATABASE} *****`)
 
             if (clearTable){
+                console.log('>>> TABLE BEING RECREATED DUE TO force sync being true <<<')
                 await _db.sync({
                     logging: (sql, queryObject) => {
                         sendToElasticAndLogToConsole(sql, queryObject)

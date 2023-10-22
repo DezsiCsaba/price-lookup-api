@@ -56,7 +56,7 @@ router.post('/product/create', async (req, res) => {
 })
 //updateOrAddProduct
 router.put("/product/update", async (req, res) => {
-    await connector()
+    await connector(false)
 
     let oldVals = await Items.findAll()
     console.log({asd: req.body.productName})

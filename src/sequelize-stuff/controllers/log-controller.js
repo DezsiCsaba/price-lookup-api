@@ -7,7 +7,7 @@ class LogController{
     }
 
     async createLog(req, res, next){
-        await connector()
+        await connector(false)
         let log = Logger.build({
             Request: req.method,
             Path: `${req.url}`
@@ -17,7 +17,7 @@ class LogController{
     }
 
     async createLogWithError(err, req, res, next){
-        await connector()
+        await connector(false)
         let log = Logger.build({
             Request: req.method,
             Path: `${req.url}`,
