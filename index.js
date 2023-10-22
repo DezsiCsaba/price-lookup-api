@@ -15,7 +15,7 @@ app.use(express.json())
 app.use('/api', router)
 
 app.use(async (err, req, res, next) => {
-    await logController.createLogWithError(err, req, res, next)
+    // await logController.createLogWithError(err, req, res, next)
     console.log('\n\n\nSOMETHING WENT DOWNHILL M8 >>>> details below:')
     console.error(err.stack)
     res.status(500).json({

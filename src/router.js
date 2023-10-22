@@ -27,9 +27,9 @@ const _ = require('lodash')
 
 
 //#region >>> ROUTES
-router.use(async (req, res, next) => {
-    await logController.createLog(req, res, next)
-})
+// router.use(async (req, res, next) => {
+//     await logController.createLog(req, res, next)
+// })
 
 //>>> ITEMS
 router.post('/product/create', async (req, res) => {
