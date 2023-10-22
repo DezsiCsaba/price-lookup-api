@@ -24,7 +24,6 @@ pictures.init(
     }
 )
 
-Items.hasMany(pictures, {foreignKey: 'ItemId'})
 pictures.belongsTo(Items)
 
 module.exports = pictures

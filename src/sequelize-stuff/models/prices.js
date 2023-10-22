@@ -27,7 +27,7 @@ prices.init(
         modelName: 'Prices'
     }
 )
-Items.hasMany(prices, {foreignKey: 'ItemId'})
+
 prices.belongsTo(Items)
 
 module.exports = prices
