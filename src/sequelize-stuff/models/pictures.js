@@ -2,9 +2,9 @@ const sequelize = require('sequelize')
 const {Model} = require('sequelize')
 const _db = require('../seqDB')
 
-class Pictures extends Model {}
+class pictures extends Model {}
 
-Pictures.init(
+pictures.init(
     {
         Picture: {
             type: sequelize.BLOB('long'),
@@ -22,4 +22,4 @@ Pictures.init(
     }
 )
 
-module.exports = Pictures
+module.exports = pictures

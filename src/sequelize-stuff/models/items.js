@@ -5,9 +5,9 @@ const _db = require('../seqDB')
 const Pictures = require('./pictures')
 const Prices = require('./prices')
 
-class Items extends Model {}
+class items extends Model {}
 
-Items.init(
+items.init(
     {
         ProductName: {
             type: sequelize.STRING,
@@ -17,17 +17,17 @@ Items.init(
     {
         sequelize: _db,
         tableName: 'items',
-        modelName: 'Items'
+        modelName: 'items'
     }
 )
 
-Items.hasMany(Pictures, {foreignKey: 'ItemId'})
-Pictures.belongsTo(Items)
+items.hasMany(Pictures, {foreignKey: 'ItemId'})
+Pictures.belongsTo(items)
 
-Items.hasMany(Prices, {foreignKey: 'ItemId'})
-Prices.belongsTo(Items)
+items.hasMany(Prices, {foreignKey: 'ItemId'})
+Prices.belongsTo(items)
 
-module.exports = Items
+module.exports = items
 
 
 
