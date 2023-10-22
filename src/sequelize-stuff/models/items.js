@@ -22,10 +22,10 @@ items.init(
 )
 
 items.hasMany(Pictures, {foreignKey: 'ItemId'})
-// Pictures.belongsTo(items)
+Pictures.belongsTo(items,{foreignKey: 'ItemId'})
 
 items.hasMany(Prices, {foreignKey: 'ItemId'})
-// Prices.belongsTo(items)
+Prices.belongsTo(items,{foreignKey: 'ItemId'})
 
 module.exports = items
 

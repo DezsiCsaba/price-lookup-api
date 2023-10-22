@@ -24,6 +24,4 @@ pictures.init(
     }
 )
 
-pictures.belongsTo(Items)
-
 module.exports = pictures

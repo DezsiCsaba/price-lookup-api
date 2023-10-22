@@ -28,8 +28,6 @@ prices.init(
     }
 )
 
-prices.belongsTo(Items)
-
 module.exports = prices
 
 
