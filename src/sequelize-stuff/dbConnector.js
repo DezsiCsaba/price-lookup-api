@@ -23,7 +23,6 @@ const connect = async (clearTable = false) => {
             }
         }).catch((err) => {
             console.log('EROOR >>>> CANNOT CONNECT TO DATABASE')
-            console.error(err)
             throw err
         })
 }
