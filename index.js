@@ -18,10 +18,12 @@ app.use(async (err, req, res, next) => {
     // await logController.createLogWithError(err, req, res, next)
     console.log('\n\n\nSOMETHING WENT DOWNHILL M8 >>>> details below:')
     console.error(err.stack)
+    
     res.status(500).json({
         msg: 'Something broke!',
         err: err.message
     })
+    throw new Error(err.stack)
 })
 
 const PORT = config.SERVER_PORT
