@@ -5,6 +5,7 @@ const {Op} = require('sequelize')
 
 //models
 const Items = require('../sequelize-stuff/models/items')
+const Pictures = require('../sequelize-stuff/models/pictures')
 const Prices = require('../sequelize-stuff/models/prices')
 
 class ProductController extends BaseController{
@@ -67,7 +68,7 @@ class ProductController extends BaseController{
     }
 
     async getById(){
-        const itemId = this._req.params
+        const {itemId} = this._req.params
         const item = await Items.findOne({
             include: [
                 {model: Pictures},

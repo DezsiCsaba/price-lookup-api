@@ -16,21 +16,18 @@ const logController = new LogController()
 //error handling
 function errorHandler (err, req, res, next) {
     console.log('index.errorHandler', err, '\n>>> Unhandled error!!!')
-
-    if (err instanceof ApiError){
-        res.status(err.statusCode).json({
+    if (err instanceof ApiError){ //technically this is unnecesarry, but why the f not have it here :D
+        return res.status(err.statusCode).json({
             msg: err.message,
             err: err.originalError,
             code: err.code,
             shouldDisplay: err.shouldDisplay
         })
     }
-    else{
-        res.status(500).json({
-            msg: 'Something broke!',
-            err: err.message
-        })
-    }
+    return res.status(500).json({
+        msg: 'Something broke!',
+        err: err.message
+    })
 }
 
 //.use
