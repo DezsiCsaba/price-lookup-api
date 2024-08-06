@@ -3,7 +3,7 @@ const router = new promiseRouter()
 
 
 //#region >>> SEQ-CONTROLLERS
-const LogController = require('./sequelize-stuff/controllers/log-controller')
+const LogController = require('./controllers/log-controller')
 const logController = new LogController()
 //#endregion
 
@@ -16,7 +16,6 @@ const Prices = require('./sequelize-stuff/models/prices')
 
 
 //#region >>> OTHER STUFF
-
 const connector = require('./sequelize-stuff/dbConnector')
 const multer = require("multer");
 const upload = multer();
@@ -198,6 +197,8 @@ router.get('/product/search/byname', async (req, res) => {
         "searchResult": obj
     })
 })
+
+//TODO - egyáltalán erre van szükségünk? Nagyon hasonló a search/byname-re. Nem tudom mire használtuk tbh
 router.get('/recommendations', async (req, res) => {
     let allLikeName = await Items.findAll({
         include: [
