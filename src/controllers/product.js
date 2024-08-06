@@ -13,14 +13,14 @@ class ProductController extends BaseController{
         const itemBuild = Items.build({
             ProductName: this._req.body.productName
         })
-        const itemSaved = functions.connectAndSave(itemBuild)
+        const itemSaved = await functions.connectAndSave(itemBuild)
 
         const priceBuild = Prices.build({
-            ShopName: this._req.body.body.shop,
-            Price: this._req.body.body.price,
-            ItemId: this._req.body.id
+            ShopName: this._req.body.shop,
+            Price: this._req.body.price,
+            ItemId: itemSaved.id
         })
-        const priceSaved = functions.connectAndSave(priceBuild, true)
+        const priceSaved = await functions.connectAndSave(priceBuild, true)
 
         this._res.json({
             itemId: itemSaved.id,
@@ -85,7 +85,7 @@ class ProductController extends BaseController{
     async getProductsByName(){
         const productName = this._req.query.productName
         const allLikeName = await Items.findAll({
-            inclue: [
+            include: [
                 {model: Pictures, limit: 1},
                 {model: Prices}
             ],

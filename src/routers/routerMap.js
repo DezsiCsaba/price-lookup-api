@@ -34,7 +34,7 @@ const routingMap = [
         action: 'uploadPicture'
     },{
         method: 'get',
-        path: '/img/itemId',
+        path: '/img/:itemId',
         controller: PictureController,
         action: 'getPicturesByItemId',
         mid: uploadSingle //TODO - midi tesztelése, nem biztos, hogy műkszik XD
