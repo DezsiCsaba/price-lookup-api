@@ -1,5 +1,5 @@
-const Logger = require('../models/logger')
-const connector = require('../dbConnector')
+const Logger = require('../sequelize-stuff/models/logger')
+const connector = require('../sequelize-stuff/dbConnector')
 
 class LogController{
     constructor() {
