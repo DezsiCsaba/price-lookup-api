@@ -2,7 +2,7 @@ const routingMap = require('./routerMap')
 const promisRouter = require('express')
 const _ = require('lodash')
 
-const router = promiseRouter()
+const router = new promisRouter()
 routingMap.forEach(routerConf => {
     const routingMapConfig = { ...routerConf }
 
@@ -14,7 +14,7 @@ routingMap.forEach(routerConf => {
         method, path, controller, action, parser, mid,
     } = routingMapConfig
 
-    router[method](path, ...mid, async(req, res, next)=>{
+    router[method](path, async(req, res, next)=>{
         req.routingMapConfig = routingMapConfig
         const newController = new controller(req, res, next)
         await newController[action]()
